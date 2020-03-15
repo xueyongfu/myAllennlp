@@ -150,7 +150,7 @@ class DataIterator(Registrable):
                     if self._track_epoch:
                         add_epoch_number(batch, epoch)
 
-                    # batch.index_instances 将一个批次的文本进行index索引化, bert文本分类并未通过此方法索引文本
+                    # batch.index_instances 将一个批次的文本进行index索引化, bert文本分类并未通过此方法索引文本,因为已经索引过了
                     if self.vocab is not None:
                         batch.index_instances(self.vocab)
 

@@ -155,7 +155,7 @@ class Batch(Iterable):
     def __iter__(self) -> Iterator[Instance]:
         return iter(self.instances)
 
-    # 比较重要的函数
+
     def index_instances(self, vocab: Vocabulary) -> None:
         for instance in self.instances:
             instance.index_fields(vocab)

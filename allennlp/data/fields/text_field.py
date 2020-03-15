@@ -102,7 +102,8 @@ class TextField(SequenceField[TextFieldTensors]):
 
         # self._token_indexers同样使用对象的概念,该text_field是个对象,文本已经索引好,并存储在这个对象中
         for indexer_name, indexer in self._token_indexers.items():
-            tensors[indexer_name] = indexer.as_padded_tensor_dict(self._indexed_tokens[indexer_name], indexer_lengths[indexer_name])
+            tensors[indexer_name] = indexer.as_padded_tensor_dict(self._indexed_tokens[indexer_name], \
+                                                                  indexer_lengths[indexer_name])
         return tensors
 
     @overrides

@@ -21,19 +21,19 @@ def get_args():
     parser = argparse.ArgumentParser()
     # 文件路径：数据目录， 缓存目录
     parser.add_argument("--train_data_dir",
-                        default='/home/xyf/桌面/Disk/NLP语料/ChnSentiCorp/ChnSentiCorp情感分析酒店评论/train.tsv',
+                        default='/home/xyf/桌面/Disk/NLP语料/文本分类/ChnSentiCorp/ChnSentiCorp情感分析酒店评论/train.tsv',
                         type=str)
     parser.add_argument("--dev_data_dir",
-                        default='/home/xyf/桌面/Disk/NLP语料/ChnSentiCorp/ChnSentiCorp情感分析酒店评论/dev.tsv',
+                        default='/home/xyf/桌面/Disk/NLP语料/文本分类/ChnSentiCorp/ChnSentiCorp情感分析酒店评论/dev.tsv',
                         type=str)
 
     parser.add_argument("--output_dir",
-                        default='',
+                        default='output',
                         type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
 
     parser.add_argument("--log_dir",
-                        default='',
+                        default='logs',
                         type=str,
                         help="日志目录，主要用于 tensorboard 分析")
 
@@ -49,16 +49,16 @@ def get_args():
                              "than this will be padded.")
     # 训练参数
     parser.add_argument("--train_batch_size",
-                        default=2,
+                        default=8,
                         type=int,
                         help="Total batch size for training.")
 
     parser.add_argument("--dev_batch_size",
-                        default=2,
+                        default=8,
                         type=int,
                         help="Total batch size for dev.")
     parser.add_argument("--test_batch_size",
-                        default=2,
+                        default=8,
                         type=int,
                         help="Total batch size for test.")
 
@@ -73,7 +73,7 @@ def get_args():
                              "E.g., 0.1 = 10%% of training.")
     # optimizer 参数
     parser.add_argument("--learning_rate",
-                        default=3e-5,
+                        default=5e-5,
                         type=float,
                         help="Adam 的 学习率")
     # 梯度累积
@@ -119,8 +119,8 @@ class ClassifierDatasetReader(DatasetReader):
     def _read(self, file_path: str) -> Iterator[Instance]:
         f = pd.read_csv(file_path, sep='\t')
         for index,row in f.iterrows():
-            label = str(row[0])
-            sentence = row[1]
+            label = str(row[1])
+            sentence = row[0]
             if label is np.nan or sentence is np.nan: continue
             yield self.text_to_instance(sentence, label)
 
@@ -128,7 +128,7 @@ class ClassifierDatasetReader(DatasetReader):
 reader = ClassifierDatasetReader()
 train_dataset = reader.read(cached_path(config.train_data_dir))
 validation_dataset = reader.read(cached_path(config.dev_data_dir))
-
+# tokens索引使用预训练语言模型, labels索引使用了这个vocab
 vocab = Vocabulary.from_instances(train_dataset + validation_dataset)
 
 model = BertClassifier(vocab=vocab, bert_model=config.bert_model_dir,)
@@ -143,7 +143,6 @@ optimizer = optim.SGD(model.parameters(), lr=config.learning_rate)
 
 
 iterator = BucketIterator(batch_size=config.train_batch_size)
-# 将vocab传给DataIterater,然后传给Batch进行文本的索引化
 iterator.index_with(vocab)
 
 trainer = Trainer(model=model,

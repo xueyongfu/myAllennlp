@@ -46,14 +46,14 @@ class PretrainedTransformerIndexer(TokenIndexer):
         self._allennlp_tokenizer = PretrainedTransformerTokenizer(model_name)
         self._tokenizer = self._allennlp_tokenizer.tokenizer
         self._added_to_vocabulary = False
-
+        # 为啥没有num_added_middle_tokens
         self._num_added_start_tokens = self._allennlp_tokenizer.num_added_start_tokens
         self._num_added_end_tokens = self._allennlp_tokenizer.num_added_end_tokens
 
         self._max_length = max_length
         if self._max_length is not None:
             self._effective_max_length = (  # we need to take into account special tokens [CLS] [SEP]
-                self._max_length - self._tokenizer.num_added_tokens()
+                self._max_length - self._tokenizer.num_added_tokens()  #num_added_tokens() 默认pairs=False,所以值为2
             )
             if self._effective_max_length <= 0:
                 raise ValueError(
@@ -95,7 +95,7 @@ class PretrainedTransformerIndexer(TokenIndexer):
     # 将传进来的tokens索引化. 索引化的真正位置
     @overrides
     def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> IndexedTokenList:
-        self._add_encoding_to_vocabulary_if_needed(vocabulary)
+        self._add_encoding_to_vocabulary_if_needed(vocabulary)   #将预训练模型的vocab加载进来
 
         indices, type_ids = self._extract_token_and_type_ids(tokens)
         # The mask has 1 for real tokens and 0 for padding tokens. Only real tokens are attended to.

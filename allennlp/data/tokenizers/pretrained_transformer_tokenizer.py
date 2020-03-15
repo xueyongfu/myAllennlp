@@ -34,7 +34,7 @@ class PretrainedTransformerTokenizer(Tokenizer):
         The name of the pretrained wordpiece tokenizer to use.
     add_special_tokens : `bool`, optional, (default=True)
         If set to `True`, the sequences will be encoded with the special tokens relative
-        to their model.
+        to their model.  如果设置为“ True”，则序列将使用相对于其模型的特殊标记进行编码。
     max_length : `int`, optional (default=None)
         If set to a number, will limit the total sequence returned so that it has a maximum length.
         If there are overflowing tokens, those will be added to the returned dictionary
@@ -67,14 +67,13 @@ class PretrainedTransformerTokenizer(Tokenizer):
         calculate_character_offsets: bool = False,
         tokenizer_kwargs: Dict[str, Any] = None,
     ) -> None:
+
         tokenizer_kwargs = tokenizer_kwargs or {}
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_kwargs)
 
         # Huggingface tokenizers have different ways of remembering whether they lowercase or not. Detecting it
         # this way seems like the least brittle way to do it.
-        tokenized = self.tokenizer.tokenize(
-            "A"
-        )  # Use a single character that won't be cut into word pieces.
+        tokenized = self.tokenizer.tokenize("A")  # Use a single character that won't be cut into word pieces.
         detokenized = " ".join(tokenized)
         self._tokenizer_lowercases = "a" in detokenized
 
@@ -261,7 +260,7 @@ class PretrainedTransformerTokenizer(Tokenizer):
     def _determine_num_special_tokens_added(self) -> Tuple[int, int, int]:
         """
         Determines the number of tokens `tokenizer` adds to a sequence or sequence pair
-        in the start, middle, and end.
+        in the start, middle, and end.  确定“ tokenizer”添加到序列或序列对中开头，中间和结尾的令牌索引号。
 
         # Returns
 

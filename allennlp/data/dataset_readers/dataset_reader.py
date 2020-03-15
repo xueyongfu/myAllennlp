@@ -95,6 +95,7 @@ class DatasetReader(Registrable):
     ) -> None:
         self.lazy = lazy
         self.max_instances = max_instances
+
         if cache_directory:
             self._cache_directory = pathlib.Path(cache_directory)
             os.makedirs(self._cache_directory, exist_ok=True)

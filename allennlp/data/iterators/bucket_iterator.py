@@ -167,7 +167,9 @@ class BucketIterator(DataIterator):
         max_length = 0.0
         longest_padding_key: Tuple[str, str] = None
         for instance in instances:
-            instance.index_fields(self.vocab)    # index_fields实现索引化
+            # index_fields实现索引化, 尽然在这里实现索引
+            instance.index_fields(self.vocab)
+
             padding_lengths = cast(Dict[str, Dict[str, float]], instance.get_padding_lengths())
             for field_name, field_padding in padding_lengths.items():
                 for padding_key, length in field_padding.items():
